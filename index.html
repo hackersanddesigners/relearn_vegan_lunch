@@ -2,19 +2,9 @@
 <html>
   <head>
     <title>Vegan lunch ingredient map</title>
-    <link
-      rel="stylesheet"
-      type="text/css"
-      href="http://timelib.890m.com/css/style.css"
-    />
     <script
       type="text/javascript"
       src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"
-    ></script>
-    <!-- <script src="http://code.jquery.com/ui/1.11.4/jquery-ui.js"></script> -->
-    <script
-      type="text/javascript"
-      src="http://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.5/js/bootstrap.min.js"
     ></script>
     <link
       rel="stylesheet"
@@ -22,7 +12,6 @@
       integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
       crossorigin=""
     />
-    <!-- Make sure you put this AFTER Leaflet's CSS -->
     <script
       src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
       integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
@@ -36,58 +25,56 @@
 
     <script>
       $(function () {
-        //This code is for Circle
         var map = L.map("map1").setView([0, 0], 3);
         // add an OpenStreetMap tile layer
         L.tileLayer("http://{s}.tile.osm.org/{z}/{x}/{y}.png", {
           attribution: "© OpenStreetMap contributors",
         }).addTo(map);
 
-        // var circle = L.circle([47.824905, 2.618787], 10000, {
-        //   color: "red",
-        //   fillColor: "#f03",
-        //   fillOpacity: 0.5,
-        // }).addTo(map1);
-
+        // list of locations, grabbed off google
         var locations = {
           ndsm: { loc: [52.401075, 4.8943817], size: 0 },
           zaandam: { loc: [52.4502657, 4.7880664, 13], size: 0 },
-          france: { loc: [47.824905, 2.618787], size: 40 },
-          south_africa: { loc: [-34.2977489, 18.2586855], size: 60 },
-          california: { loc: [37.1844009, -123.7950207], size: 20 },
-          netherlands: { loc: [52.2076825, 4.1585181], size: 20 },
-          columbia: { loc: [4.6311188, -78.8340307], size: 50 },
-          greece: { loc: [38.1245143, 22.2391827], size: 30 },
-          india: { loc: [20.7507829, 73.7341787], size: 80 },
-          vietnam: { loc: [15.7477837, 101.416399], size: 40 },
+          france: { loc: [46.227638, 2.213749], size: 40 },
+          south_africa: { loc: [-30.559482, 22.937506], size: 60 },
+          california: { loc: [37.1323209, -119.7950207], size: 20 }, // 37° 13.232 W 119° 30.454
+          netherlands: { loc: [52.132633, 5.291266], size: 20 },
+          colombia: { loc: [4.570868, -74.297333], size: 50 },
+          greece: { loc: [39.074208, 21.824312], size: 30 },
+          india: { loc: [20.593684, 78.96288], size: 80 },
+          vietnam: { loc: [14.058324, 108.277199], size: 40 },
         };
 
+        // list of products, group by location
         var products = {
           cauliflower: "france",
           "dates & lemons": "south_africa",
           almonds: "california",
           "cucumber & parsely": "netherlands",
-          avocado: "columbia",
+          avocado: "colombia",
           "olive oil": "greece",
           "basmati rice": "india",
           "Black pepper": "vietnam",
         };
 
+        // everything goes from AH distribution in Zaandam to NDSM
         latlngs = [locations.ndsm.loc, locations.zaandam.loc];
         polyline = L.polyline(latlngs, { color: "red" });
         polyline.addTo(map);
 
         var marker = new L.marker(locations.ndsm.loc, { opacity: 1 }); //opacity may be set to zero
 
+        // iterate products
         for (product in products) {
           var location = locations[products[product]];
           console.log(location);
+          // line from location to zaandam
           var latlngs = [location.loc, locations.zaandam.loc];
           var polyline = L.polyline(latlngs, { color: "red" });
           polyline.addTo(map);
 
-          // Cauliflower
-          var marker = new L.marker(location.loc, { opacity: 0.01 }); //opacity may be set to zero
+          // tooltip with name of products
+          var marker = new L.marker(location.loc, { opacity: 0.01 });
           marker
             .bindTooltip(product, {
               permanent: true,
@@ -95,9 +82,9 @@
               offset: [0, 0],
             })
             .openTooltip();
-          // marker.bindTooltip("my tooltip text")
           marker.addTo(map);
 
+          // circle roughly the size of the country
           var circleOptions = {
             color: "red",
             fillColor: "#f03",
